@@ -154,7 +154,16 @@ static inline QStringList getPluginPaths()
     pluginPath += QLatin1Char('/');
     pluginPath += QLatin1String("plugins");
     rc.push_back(pluginPath);
-    // 2) "PlugIns" (OS X)
+    // 2) "plugins" in build tree (Win/Linux)
+    pluginPath = rootDirPath;
+    pluginPath += QLatin1Char('/');
+    pluginPath += QLatin1String(GCS_LIBRARY_BASENAME);
+    pluginPath += QLatin1Char('/');
+    pluginPath += QLatin1String(GCS_PROJECT_BRANDING);
+    pluginPath += QLatin1Char('/');
+    pluginPath += QLatin1String("plugins");
+    rc.push_back(pluginPath);
+    // 3) "PlugIns" (OS X)
     pluginPath = rootDirPath;
     pluginPath += QLatin1Char('/');
     pluginPath += QLatin1String("Plugins");
@@ -361,6 +370,9 @@ int main(int argc, char **argv)
     }
 
     QObject::connect(&pluginManager,SIGNAL(splashMessages(QString)),&splash,SLOT(showMessage(const QString)));
+    QObject::connect(&pluginManager,SIGNAL(hideSplash()),&splash,SLOT(hide()));
+    QObject::connect(&pluginManager,SIGNAL(showSplash()),&splash,SLOT(show()));
+
     pluginManager.loadPlugins();
     {
         QStringList errors;

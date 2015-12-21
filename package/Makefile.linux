@@ -58,9 +58,16 @@ standalone: | gcs extract_firmware
 .PHONY: gcs
 gcs:
 	@echo "Linux Package Make of GCS."
+ifeq ($(EXPORT_SYMBOLS), YES)
+	$(V1) $(MAKE) -C $(ROOT_DIR) GCS_BUILD_CONF=debug $@
+else
 	$(V1) $(MAKE) -C $(ROOT_DIR) GCS_BUILD_CONF=release $@
+endif
 
 ground_package_os_specific: ground_package_common
+ifeq ($(EXPORT_SYMBOLS), YES)
+	$(V1) $(ROOT_DIR)/package/linux_extract_debug_symbols.sh $(DUMP_SYMBOLS_TOOL) $(PACKAGE_DIR)/$(GCS_PACKAGE_NAME)
+endif
 	$(V1) cp -v $(ROOT_DIR)/package/linux/assets/exec $(PACKAGE_DIR)/$(GCS_PACKAGE_NAME)/drgcs
 	$(V1) sed -i -e "$(SED_SUBSTITUTE)" $(PACKAGE_DIR)/$(GCS_PACKAGE_NAME)/drgcs
 
@@ -85,6 +92,9 @@ $(foreach cpfile, $(DEB_ASSETS_FILES), $(eval $(call CP_DEB_FILES_TEMPLATE,$(cpf
 
 package_ground_compress: package_ground
 	$(V1) tar -cvJf $(PACKAGE_DIR)/$(GCS_PACKAGE_NAME).tar.xz -C $(PACKAGE_DIR) $(GCS_PACKAGE_NAME)
+ifeq ($(EXPORT_SYMBOLS),YES)
+	$(V1) tar -cvJf $(PACKAGE_DIR)/$(GCS_PACKAGE_NAME)_symbols.tar.xz -C $(PACKAGE_DIR) $(GCS_PACKAGE_NAME)_symbols
+endif
 
 package_matlab_compress: package_matlab
 	$(V1) tar -cvJf $(PACKAGE_DIR)/matlab-$(PACKAGE_LBL).tar.xz -C $(ML_DIR) .

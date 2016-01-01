@@ -51,12 +51,12 @@ endif
 FLIGHTPKGNAME := $(PACKAGE_DIR)/flight-$(PACKAGE_LBL).zip
 
 ifeq ($(BUILD_ALL_DEPENDENCIES), YES)
-	STANDALONE_DEPENDENCIES = gcs extract_firmware
+	STANDALONE_DEPENDENCIES = gcs
 	EXTRACT_FIRMWARE_DEPENDENCIES = package_flight
 	PACKAGE_ALL_DEPENDENCIES = package_ground
 else
 	STANDALONE_DEPENDENCIES = extract_firmware
-	EXTRACT_FIRMWARE_DEPENDENCIES = $(FLIGHTPKGNAME) 
+	EXTRACT_FIRMWARE_DEPENDENCIES =
 	PACKAGE_ALL_DEPENDENCIES = package_ground extract_firmware
 endif
 
@@ -82,6 +82,7 @@ package_installer: | installer_package
 package_all: $(PACKAGE_ALL_DEPENDENCIES)
 
 extract_firmware: $(EXTRACT_FIRMWARE_DEPENDENCIES)
+	$(V1) [ -f "$(FLIGHTPKGNAME)" ] ||  { echo Could not find the flight package file $(FLIGHTPKGNAME); exit 1; }
 	@echo $@ starting
 	mkdir -p "$(PACKAGE_DIR)"/firmware_$(PACKAGE_LBL)
 	unzip -u -o "$(FLIGHTPKGNAME)" -d "$(PACKAGE_DIR)"/firmware_$(PACKAGE_LBL)
@@ -109,7 +110,7 @@ export V1    := $(AT)
 else ifeq ($(V), 1)
 endif
 
-ground_package_common: | standalone
+ground_package_common: standalone
 	@echo $@ starting
 	$(V1) mkdir -p $(PACKAGE_DIR)/$(GCS_PACKAGE_NAME)/bin
 	$(V1) mkdir -p $(PACKAGE_DIR)/$(GCS_PACKAGE_NAME)/share

@@ -53,11 +53,9 @@ FLIGHTPKGNAME := $(PACKAGE_DIR)/flight-$(PACKAGE_LBL).zip
 ifeq ($(BUILD_ALL_DEPENDENCIES), YES)
 	STANDALONE_DEPENDENCIES = gcs
 	EXTRACT_FIRMWARE_DEPENDENCIES = package_flight
-	PACKAGE_ALL_DEPENDENCIES = package_ground
 else
-	STANDALONE_DEPENDENCIES = extract_firmware
+	STANDALONE_DEPENDENCIES =
 	EXTRACT_FIRMWARE_DEPENDENCIES =
-	PACKAGE_ALL_DEPENDENCIES = package_ground extract_firmware
 endif
 
 USE_MSVC ?= NO
@@ -79,7 +77,7 @@ package_ground: | ground_package
 
 package_installer: | installer_package
 
-package_all: $(PACKAGE_ALL_DEPENDENCIES)
+package_all: package_ground extract_firmware
 
 extract_firmware: $(EXTRACT_FIRMWARE_DEPENDENCIES)
 	$(V1) [ -f "$(FLIGHTPKGNAME)" ] ||  { echo Could not find the flight package file $(FLIGHTPKGNAME); exit 1; }

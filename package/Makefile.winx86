@@ -13,7 +13,7 @@ standalone: $(STANDALONE_DEPENDENCIES)
 	$(V1) windeployqt -printsupport -concurrent -gui -opengl -xml -quick -quickwidgets -test -sql -serialport -multimedia -multimediawidgets --list relative --qmldir $(ROOT_DIR)/build/ground/gcs/share/welcome $(ROOT_DIR)/build/ground/gcs/bin/drgcs.exe 
 	$(V1) windeployqt -printsupport -concurrent -gui -opengl -xml -quick -quickwidgets -test -sql -serialport -multimedia -multimediawidgets --qmldir $(ROOT_DIR)/build/ground/gcs/share/welcome $(ROOT_DIR)/build/ground/gcs/bin/drgcs.exe 
 
-installer_package: package_ground
+installer_package: package_ground extract_firmware
 	$(V1) mkdir -p "$(dir $(NSIS_HEADER))"
 	$(VERSION_CMD) --template="$(NSIS_TEMPLATE)" --outfile="$(NSIS_HEADER)" PACKAGE_LBL="$(PACKAGE_LBL)"
 	$(V1) echo "Building Windows installer, please wait..."
@@ -39,7 +39,7 @@ endif
 	$(V1)find $(PACKAGE_DIR)/$(GCS_PACKAGE_NAME) -type f -name "*.exp" -exec rm -f {} \;
 
 .PHONY: gcs
-gcs: extract_firmware
+gcs:
 ifeq ($(EXPORT_SYMBOLS), YES)
 	$(V1) $(MAKE) -C $(ROOT_DIR) GCS_QMAKE_OPTS="CONFIG+=RELEASE_WITH_SYMBOLS" GCS_BUILD_CONF=release $@
 else
